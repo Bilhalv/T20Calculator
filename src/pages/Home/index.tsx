@@ -3,6 +3,7 @@ import { Atributos } from "../../data/tables/Atributos";
 import { Atributo } from "../../data/constructors/Atributo";
 import { Button, IconButton, Input } from "@mui/material";
 import { Normalize } from "../../data/functions/Normalize.ts";
+import RaceSelect from "../../components/RaceSelect.tsx";
 
 type atributos = {
   forca: number;
@@ -12,13 +13,18 @@ type atributos = {
   sabedoria: number;
   carisma: number;
 };
-interface ContextProps {
+
+type racaProps = {
   raca: string;
+  setRaca: Function;
+};
+interface ContextProps {
+  raca: racaProps;
   atributos: atributos;
 }
 
 export const Context = createContext<ContextProps>({
-  raca: "",
+  raca: {} as racaProps,
   atributos: {} as atributos,
 });
 
@@ -139,7 +145,10 @@ const Home = () => {
     <>
       <Context.Provider
         value={{
-          raca,
+          raca: {
+            raca,
+            setRaca,
+          },
           atributos,
         }}
       >
@@ -148,9 +157,12 @@ const Home = () => {
             <h1 className="text-4xl font-bold text-center">
               Escolha seus atributos
             </h1>
-            <i className="text-gray-600">{pontos} pontos restantes</i>
+            <div className="flex justify-between items-center">
+              <p className="text-gray-600 italic w-full">{pontos} pontos restantes</p>
+              <RaceSelect />
+            </div>
             <div className="flex flex-wrap gap-2 items-center justify-center mt-5">
-              {Atributos.map((atributo, index) => {
+              {Atributos.map((atributo) => {
                 return (
                   <AtriutoBlock
                     atributo={atributo}
