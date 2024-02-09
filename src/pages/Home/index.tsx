@@ -1,91 +1,175 @@
-import React, { createContext, useEffect, useState } from "react";
-import PersonagemBlock from "../../components/Fichas/Personagem";
-import { Personagens } from "../../data/tables/Personagens";
-import NPCBlock from "../../components/Fichas/NPC";
-import { NPCShown } from "../../data/constructors/NPC";
-import Nav from "../../components/Nav/Nav";
-import FlipMove from "react-flip-move";
+import React, { createContext, useState } from "react";
+import { Atributos } from "../../data/tables/Atributos";
+import { Atributo } from "../../data/constructors/Atributo";
+import { Button, IconButton, Input } from "@mui/material";
+import { Normalize } from "../../data/functions/Normalize.ts";
 
-interface NPCsContextProps {
-  npcsShown: NPCShown[];
-  setNpcsShown: React.Dispatch<React.SetStateAction<NPCShown[]>>;
-  deleteNPC: (id: number) => void;
-  moveNPC: (pos: string, index: number) => void;
-  addNPC: (newNPC: NPCShown) => void;
+type atributos = {
+  forca: number;
+  destreza: number;
+  constituicao: number;
+  inteligência: number;
+  sabedoria: number;
+  carisma: number;
+};
+interface ContextProps {
+  raca: string;
+  atributos: atributos;
 }
 
-export const NPCsContext = createContext<NPCsContextProps>({
-  npcsShown: [],
-  setNpcsShown: () => {},
-  deleteNPC: () => {},
-  moveNPC: () => {},
-  addNPC: () => {},
+export const Context = createContext<ContextProps>({
+  raca: "",
+  atributos: {} as atributos,
 });
 
-const Home = () => {
-  const [npcsShown, setNpcsShown] = useState<NPCShown[]>(
-    JSON.parse(localStorage.getItem("npcs") || "[]") as NPCShown[]
-  );
+function AtriutoBlock({
+  atributo,
+  value,
+  setValue,
+  pontos,
+  setPontos,
+}: {
+  atributo: Atributo;
+  value: number;
+  setValue: Function;
+  pontos: number;
+  setPontos: Function;
+}) {
+  type pontosTableProps = {
+    value: number;
+    pontos: number;
+  };
+  const pontosTable: pontosTableProps[] = [
+    { value: -1, pontos: -1 },
+    { value: 0, pontos: 1 },
+    { value: 1, pontos: 1 },
+    { value: 2, pontos: 1 },
+    { value: 3, pontos: 2 },
+    { value: 4, pontos: 3 },
+  ];
+  function changeValue(x: number) {
+    const newPonto = pontosTable.find((ponto) => ponto.value === x);
+    const oldPonto = pontosTable.find((ponto) => ponto.value === value);
 
-  function deleteNPC(id: number) {
-    setNpcsShown((prevNpcs) => prevNpcs.filter((npc) => npc.id !== id));
-  }
+    if (!newPonto || !oldPonto) return;
 
-  function moveNPC(pos: string, index: number) {
-    if (
-      (pos === "left" && index > 0) ||
-      (pos === "right" && index < npcsShown.length - 1)
-    ) {
-      const newNpcs = [...npcsShown];
-      const swapIndex = pos === "left" ? index - 1 : index + 1;
-      [newNpcs[index], newNpcs[swapIndex]] = [
-        newNpcs[swapIndex],
-        newNpcs[index],
-      ];
-      setNpcsShown([...newNpcs]);
-      localStorage.setItem("npcs", JSON.stringify(newNpcs));
+    const diff = value < x ? -newPonto.pontos : oldPonto.pontos;
+    if (pontos + diff >= 0) {
+      setPontos(pontos + diff);
+      setValue(x);
     }
   }
+  return (
+    <div className="bg-white bg-opacity-50 p-4 rounded-2xl flex gap-2 w-56 flex-col items-center select-none">
+      <h1 className="font-bold text-center w-full">
+        {atributo.nome.substring(0, 3).toUpperCase()}
+      </h1>
+      <div className="flex justify-between items-center w-full">
+        <IconButton
+          onClick={() => {
+            changeValue(value + 1);
+          }}
+          disabled={
+            value >= 4 ||
+            (pontosTable.find((ponto) => ponto.value === value + 1)?.pontos ||
+              0) > pontos
+          }
+          className="h-10 w-10"
+          sx={{
+            color: "green",
+            border: "2px solid green",
+            "&:hover": {
+              backgroundColor: "green",
+              color: "white",
+            },
+            "&:disabled": {
+              borderColor: "gray",
+              cursor: "not-allowed",
+            },
+          }}
+        >
+          +
+        </IconButton>
+        <p
+          className={`${
+            value > 0 ? "text-green-800" : value < 0 && "text-red-600"
+          } font-bold transition-all w-full text-center`}
+        >
+          {value}
+        </p>
+        <IconButton
+          onClick={() => {
+            changeValue(value - 1);
+          }}
+          className="h-10 w-10"
+          sx={{
+            color: "red",
+            border: "2px solid red",
+            "&:hover": {
+              backgroundColor: "red",
+              color: "white",
+            },
+            "&:disabled": {
+              borderColor: "gray",
+              cursor: "not-allowed",
+            },
+          }}
+          disabled={value <= -1}
+        >
+          -
+        </IconButton>
+      </div>
+    </div>
+  );
+}
 
-  function addNPC(npc: NPCShown) {
-    setNpcsShown([...npcsShown, npc]);
-  }
-
-  useEffect(() => {
-    localStorage.setItem("npcs", JSON.stringify(npcsShown));
-  }, [npcsShown]);
+const Home = () => {
+  const [raca, setRaca] = useState<string>("");
+  const [atributos, setAtributos] = useState<atributos>({
+    forca: 0,
+    destreza: 0,
+    constituicao: 0,
+    inteligência: 0,
+    sabedoria: 0,
+    carisma: 0,
+  } as atributos);
+  const [pontos, setPontos] = useState<number>(10);
 
   return (
     <>
-      <NPCsContext.Provider
-        value={{ npcsShown, setNpcsShown, deleteNPC, moveNPC, addNPC }}
+      <Context.Provider
+        value={{
+          raca,
+          atributos,
+        }}
       >
-        <Nav />
-        <body className="bg-bg-t20 bg-fixed bg-center p-8 font-tormenta flex flex-col gap-10">
-          <div className="bg-white p-4 bg-opacity-25 rounded-xl flex justify-center flex-wrap gap-4">
-            {Personagens.map((personagem) => (
-              <PersonagemBlock Personagem={personagem} />
-            ))}
-          </div>
-          <div className="bg-white p-4 bg-opacity-25 rounded-xl flex flex-col gap-4 relative">
-            <FlipMove typeName={null}>
-              <div className="flex justify-evenly">
-                {npcsShown.map((npc: NPCShown) => (
-                  <p>
-                    {npc.nome} - {npc.id}
-                  </p>
-                ))}
-              </div>
-              <div className="flex  justify-center flex-wrap gap-4 relative">
-
-              {npcsShown.map((npc: NPCShown) => (
-                <NPCBlock NPC={npc} key={npc.id} />
-              ))}
-              </div>
-            </FlipMove>
+        <body className="bg-bg-t20 bg-fixed bg-center p-8 font-tormenta flex flex-col gap-10 min-h-screen">
+          <div className="bg-white bg-opacity-50 p-8 rounded-2xl">
+            <h1 className="text-4xl font-bold text-center">
+              Escolha seus atributos
+            </h1>
+            <i className="text-gray-600">{pontos} pontos restantes</i>
+            <div className="flex flex-wrap gap-2 items-center justify-center mt-5">
+              {Atributos.map((atributo, index) => {
+                return (
+                  <AtriutoBlock
+                    atributo={atributo}
+                    value={atributos[Normalize(atributo.nome.toLowerCase())]}
+                    setValue={(value: number) => {
+                      setAtributos({
+                        ...atributos,
+                        [Normalize(atributo.nome.toLowerCase())]: value,
+                      });
+                    }}
+                    pontos={pontos}
+                    setPontos={setPontos}
+                  />
+                );
+              })}
+            </div>
           </div>
         </body>
-      </NPCsContext.Provider>
+      </Context.Provider>
     </>
   );
 };
