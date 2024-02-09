@@ -71,6 +71,35 @@ function AtriutoBlock({
         {atributo.nome.substring(0, 3).toUpperCase()}
       </h1>
       <div className="flex justify-between items-center w-full">
+        
+        <IconButton
+          onClick={() => {
+            changeValue(value - 1);
+          }}
+          className="h-10 w-10"
+          sx={{
+            color: "red",
+            border: "2px solid red",
+            "&:hover": {
+              backgroundColor: "red",
+              color: "white",
+            },
+            "&:disabled": {
+              borderColor: "gray",
+              cursor: "not-allowed",
+            },
+          }}
+          disabled={value <= -1}
+        >
+          -
+        </IconButton>
+        <p
+          className={`${
+            value > 0 ? "text-green-800" : value < 0 && "text-red-600"
+          } font-bold transition-all w-full text-center`}
+        >
+          {value}
+        </p>
         <IconButton
           onClick={() => {
             changeValue(value + 1);
@@ -95,34 +124,6 @@ function AtriutoBlock({
           }}
         >
           +
-        </IconButton>
-        <p
-          className={`${
-            value > 0 ? "text-green-800" : value < 0 && "text-red-600"
-          } font-bold transition-all w-full text-center`}
-        >
-          {value}
-        </p>
-        <IconButton
-          onClick={() => {
-            changeValue(value - 1);
-          }}
-          className="h-10 w-10"
-          sx={{
-            color: "red",
-            border: "2px solid red",
-            "&:hover": {
-              backgroundColor: "red",
-              color: "white",
-            },
-            "&:disabled": {
-              borderColor: "gray",
-              cursor: "not-allowed",
-            },
-          }}
-          disabled={value <= -1}
-        >
-          -
         </IconButton>
       </div>
     </div>
