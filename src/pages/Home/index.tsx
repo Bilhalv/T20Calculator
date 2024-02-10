@@ -1,9 +1,10 @@
 import React, { createContext, useState } from "react";
 import { Atributos } from "../../data/tables/Atributos";
 import { Atributo } from "../../data/constructors/Atributo";
-import { Button, IconButton, Input } from "@mui/material";
+import { Button, IconButton, Input, Switch } from "@mui/material";
 import { Normalize } from "../../data/functions/Normalize.ts";
 import RaceSelect from "../../components/RaceSelect.tsx";
+import { Racas } from "../../data/tables/Racas.ts";
 
 type atributos = {
   forca: number;
@@ -18,14 +19,22 @@ type racaProps = {
   raca: string;
   setRaca: Function;
 };
+
+type selectedProps = {
+  selected: string[];
+  setSelected: Function;
+};
+
 interface ContextProps {
   raca: racaProps;
   atributos: atributos;
+  selected: selectedProps;
 }
 
 export const Context = createContext<ContextProps>({
   raca: {} as racaProps,
   atributos: {} as atributos,
+  selected: {} as selectedProps,
 });
 
 function AtriutoBlock({
@@ -65,13 +74,47 @@ function AtriutoBlock({
       setValue(x);
     }
   }
+
+  const { raca, selected } = React.useContext(Context);
+  const racaName = raca.raca;
+
+  const racaSelecionada = Racas.find((raca) => raca.nome === racaName);
+
   return (
     <div className="bg-white bg-opacity-50 p-4 rounded-2xl flex gap-2 w-56 flex-col items-center select-none">
-      <h1 className="font-bold text-center w-full">
-        {atributo.nome.substring(0, 3).toUpperCase()}
-      </h1>
+      <div className="flex justify-between w-full items-center">
+        <h1 className="font-bold text-center w-full">
+          {atributo.nome.substring(0, 3).toUpperCase()}{" "}
+          {racaSelecionada?.escolha && selected.selected.includes(atributo.nome)
+            ? 1
+            : racaSelecionada?.atributos.find(
+                (a) => a.nome === atributo.nome)?.valor || ``}
+        </h1>
+        {racaSelecionada?.escolha && (
+          <Switch
+            checked={selected.selected.includes(atributo.nome)}
+            disabled={
+              (selected.selected.length >= 3 &&
+                !selected.selected.includes(atributo.nome)) ||
+              Boolean(
+                racaSelecionada?.atributos.find((a) => a.nome === atributo.nome)
+              )
+            }
+            onChange={(e) => {
+              if (!e.target.checked) {
+                selected.setSelected(
+                  selected.selected.filter(
+                    (x) => x !== atributo.nome
+                  ) as string[]
+                );
+              } else {
+                selected.setSelected([...selected.selected, atributo.nome]);
+              }
+            }}
+          />
+        )}
+      </div>
       <div className="flex justify-between items-center w-full">
-        
         <IconButton
           onClick={() => {
             changeValue(value - 1);
@@ -141,6 +184,7 @@ const Home = () => {
     carisma: 0,
   } as atributos);
   const [pontos, setPontos] = useState<number>(10);
+  const [selectedAtributos, setSelectedAtributos] = useState<string[]>([]);
 
   return (
     <>
@@ -151,6 +195,10 @@ const Home = () => {
             setRaca,
           },
           atributos,
+          selected: {
+            selected: selectedAtributos,
+            setSelected: setSelectedAtributos,
+          },
         }}
       >
         <body className="bg-bg-t20 bg-fixed bg-center p-8 font-tormenta flex flex-col gap-10 min-h-screen">
@@ -159,7 +207,9 @@ const Home = () => {
               Escolha seus atributos
             </h1>
             <div className="flex justify-between items-center">
-              <p className="text-gray-600 italic w-full">{pontos} pontos restantes</p>
+              <p className="text-gray-600 italic w-full">
+                {pontos} pontos restantes
+              </p>
               <RaceSelect />
             </div>
             <div className="flex flex-wrap gap-2 items-center justify-center mt-5">

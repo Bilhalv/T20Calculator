@@ -7,4 +7,5 @@ export type Raca = {
     nome: string;
     descricao: string;
     atributos: AtributoRaca[];
+    escolha?: boolean
 }

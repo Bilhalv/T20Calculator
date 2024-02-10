@@ -1,4 +1,4 @@
-import { FormControl, InputLabel, Select } from "@mui/material";
+import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import React, { useContext } from "react";
 import { Racas } from "../data/tables/Racas";
 import { Context } from "../pages/Home";
@@ -6,21 +6,19 @@ import { Context } from "../pages/Home";
 export default function RaceSelect() {
   const { raca } = useContext(Context);
   return (
-    <FormControl fullWidth>
+    <FormControl fullWidth className="">
       <InputLabel id="Seleciona a raça">Raça</InputLabel>
-      {/*
-        TODO fazer o select ser com a label centralizada e estilizada
-      */}
       <Select
+        color="error"
         value={raca.raca}
         onChange={(e) => {
           raca.setRaca(e.target.value);
         }}
-        size="small"
+        size="medium"
         labelId="Seleciona a raça"
       >
         {Racas.map((x) => (
-          <option value={x.nome}>{x.nome}</option>
+          <MenuItem value={x.nome}>{x.nome}</MenuItem>
         ))}
       </Select>
     </FormControl>
