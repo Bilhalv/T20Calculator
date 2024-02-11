@@ -39,6 +39,7 @@ export default function AlertFinal() {
       </button>
       <Collapse in={open}>
         <Alert
+          icon={false}
           variant="outlined"
           sx={{
             marginTop: "8px",
