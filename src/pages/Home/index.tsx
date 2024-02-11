@@ -5,6 +5,7 @@ import { Button, IconButton, Input, Switch } from "@mui/material";
 import { Normalize } from "../../data/functions/Normalize.ts";
 import RaceSelect from "../../components/RaceSelect.tsx";
 import { Racas } from "../../data/tables/Racas.ts";
+import AlertFinal from "../../components/AlertFinal.tsx";
 
 type atributos = {
   forca: number;
@@ -87,8 +88,8 @@ function AtriutoBlock({
           {atributo.nome.substring(0, 3).toUpperCase()}{" "}
           {racaSelecionada?.escolha && selected.selected.includes(atributo.nome)
             ? 1
-            : racaSelecionada?.atributos.find(
-                (a) => a.nome === atributo.nome)?.valor || ``}
+            : racaSelecionada?.atributos.find((a) => a.nome === atributo.nome)
+                ?.valor || ``}
         </h1>
         {racaSelecionada?.escolha && (
           <Switch
@@ -230,6 +231,7 @@ const Home = () => {
                 );
               })}
             </div>
+            <AlertFinal />
           </div>
         </body>
       </Context.Provider>
