@@ -61,7 +61,7 @@ export default function AlertFinal() {
               <tr>
                 <th>Nome</th>
                 <th>Padrão</th>
-                <th>Raca({raca.raca || 1})</th>
+                <th>Raca</th>
                 <th>Total</th>
               </tr>
             </thead>
@@ -84,7 +84,7 @@ export default function AlertFinal() {
                     : valorRaca;
                 return (
                   <tr key={key}>
-                    <td className="text-left capitalize">{key}</td>
+                    <td className="text-left capitalize">{key.substring(0, 3).toUpperCase()}</td>
                     <td>{value}</td>
                     <td>{valorRaca}</td>
                     <td>{value + valorRaca}</td>
