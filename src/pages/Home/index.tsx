@@ -203,12 +203,12 @@ const Home = () => {
         }}
       >
         <body className="bg-bg-t20 bg-fixed bg-center p-8 font-tormenta flex flex-col gap-10 min-h-screen">
-          <div className="bg-white bg-opacity-50 p-8 rounded-2xl">
+          <div className="bg-white backdrop-blur bg-opacity-30 p-8 rounded-2xl">
             <h1 className="text-4xl font-bold text-center">
               Escolha seus atributos
             </h1>
             <div className="flex justify-between items-center">
-              <p className="text-gray-600 italic w-full">
+              <p className="text-gray-800 italic w-full">
                 {pontos} pontos restantes
               </p>
               <RaceSelect />
