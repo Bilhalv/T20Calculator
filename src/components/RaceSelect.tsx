@@ -4,7 +4,7 @@ import { Racas } from "../data/tables/Racas";
 import { Context } from "../pages/Home";
 
 export default function RaceSelect() {
-  const { raca } = useContext(Context);
+  const { raca, selected } = useContext(Context);
   return (
     <FormControl fullWidth className="">
       <InputLabel id="Seleciona a raça">Raça</InputLabel>
@@ -12,6 +12,7 @@ export default function RaceSelect() {
         color="error"
         value={raca.raca}
         onChange={(e) => {
+          selected.setSelected([]);
           raca.setRaca(e.target.value);
         }}
         size="medium"
